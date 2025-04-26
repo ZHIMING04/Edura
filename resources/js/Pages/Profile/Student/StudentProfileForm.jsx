@@ -5,6 +5,71 @@ import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 
+const FACULTIES = [
+    'Faculty of Computing',
+    'Faculty of Civil Engineering',
+    'Faculty of Electrical Engineering',
+    'Faculty of Chemical Engineering',
+    'Faculty of Mechanical Engineering',
+    'Faculty of Industrial Sciences & Technology',
+    'Faculty of Manufacturing Engineering',
+    'Faculty of Technology Engineering',
+    'Faculty of Business & Communication',
+    'Faculty of Industrial Management',
+    'Faculty of Applied Sciences',
+    'Faculty of Science & Technology',
+    'Faculty of Medicine',
+    'Faculty of Pharmacy',
+    'Faculty of Dentistry',
+    'Faculty of Arts & Social Sciences',
+    'Faculty of Education',
+    'Faculty of Economics & Administration',
+    'Faculty of Law',
+    'Faculty of Built Environment',
+    'Faculty of Agriculture',
+    'Faculty of Forestry',
+    'Faculty of Veterinary Medicine',
+    'Faculty of Islamic Studies',
+    'Faculty of Sports Science',
+    'Faculty of Creative Technology',
+    'Faculty of Music',
+    'Faculty of Architecture & Design',
+    'Faculty of Hotel & Tourism Management',
+    'Faculty of Health Sciences',
+    'Faculty of Defence Studies & Management'
+];
+
+const UNIVERSITIES = [
+    'Universiti Malaysia Pahang',
+    'Universiti Malaysia Sabah',
+    'Universiti Malaysia Terengganu',
+    'Universiti Kebangsaan Malaysia',
+    'Universiti Malaya',
+    'Universiti Sains Malaysia',
+    'Universiti Putra Malaysia',
+    'Universiti Teknologi Malaysia',
+    'Universiti Utara Malaysia',
+    'Universiti Islam Antarabangsa Malaysia',
+    'Universiti Pendidikan Sultan Idris',
+    'Universiti Sains Islam Malaysia',
+    'Universiti Teknologi MARA',
+    'Universiti Malaysia Sarawak',
+    'Universiti Teknikal Malaysia Melaka',
+    'Universiti Malaysia Perlis',
+    'Universiti Tun Hussein Onn Malaysia',
+    'Universiti Sultan Zainal Abidin',
+    'Universiti Pertahanan Nasional Malaysia',
+    'Universiti Malaysia Kelantan'
+];
+
+const MAJORS = [
+    'Computer Science',
+    'Engineering',
+    'Buisiness',
+    'Biology',
+    'Arts',
+];
+
 export default function StudentProfileForm({ className = '', user }) {
     const student = user.student || {};
     
@@ -44,37 +109,56 @@ export default function StudentProfileForm({ className = '', user }) {
 
                     <div>
                         <InputLabel htmlFor="university" value="University" />
-                        <TextInput
+                        <select
                             id="university"
                             value={data.university}
                             onChange={(e) => setData('university', e.target.value)}
-                            type="text"
-                            className="mt-1 block w-full"
-                        />
+                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        >
+                            <option value="">Select University</option>
+                            {UNIVERSITIES.map((university) => (
+                                <option key={university} value={university}>
+                                    {university}
+                                </option>
+                            ))}
+                        </select>
                         <InputError message={errors.university} className="mt-2" />
                     </div>
 
                     <div>
                         <InputLabel htmlFor="faculty" value="Faculty" />
-                        <TextInput
+                        <select
                             id="faculty"
                             value={data.faculty}
                             onChange={(e) => setData('faculty', e.target.value)}
-                            type="text"
-                            className="mt-1 block w-full"
-                        />
+                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        >
+                            <option value="">Select Faculty</option>
+                            {FACULTIES.map((faculty) => (
+                                <option key={faculty} value={faculty}>
+                                    {faculty}
+                                </option>
+                            ))}
+                        </select>
                         <InputError message={errors.faculty} className="mt-2" />
                     </div>
 
                     <div>
                         <InputLabel htmlFor="major" value="Major" />
-                        <TextInput
+                        <select
                             id="major"
                             value={data.major}
                             onChange={(e) => setData('major', e.target.value)}
-                            type="text"
-                            className="mt-1 block w-full"
-                        />
+                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        >
+                            <option value="">Select Major</option>
+                                {MAJORS.map((major) => (
+                                    <option key={major} value={major}>
+                                        {major}
+                                    </option>
+                                ))
+                            }
+                        </select>
                         <InputError message={errors.major} className="mt-2" />
                     </div>
 
@@ -102,7 +186,6 @@ export default function StudentProfileForm({ className = '', user }) {
                             <option value="">Select Level</option>
                             <option value="Undergraduate">Undergraduate</option>
                             <option value="Postgraduate">Postgraduate</option>
-                            <option value="PhD">PhD</option>
                         </select>
                         <InputError message={errors.level} className="mt-2" />
                     </div>
@@ -170,4 +253,4 @@ export default function StudentProfileForm({ className = '', user }) {
             </form>
         </section>
     );
-} 
+}
