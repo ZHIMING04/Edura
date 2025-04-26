@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Silber\Bouncer\BouncerFacade as Bouncer;
 
 class RoleSeeder extends Seeder
@@ -37,6 +38,7 @@ class RoleSeeder extends Seeder
 
         // Create an admin user
         $admin = User::create([
+            'id' => Str::uuid()->toString(),
             'name' => 'Admin User',
             'email' => 'admin@example.com',
             'password' => Hash::make('password'),
