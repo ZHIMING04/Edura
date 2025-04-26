@@ -20,7 +20,7 @@ const fadeIn = {
     transition: { duration: 0.6 }
 };
 
-export default function Dashboard() {
+export default function Dashboard({ auth }) {
     return (
         <AuthenticatedLayout
             header={
@@ -30,7 +30,7 @@ export default function Dashboard() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    Dashboard
+                    Welcome , {auth.user.name}!
                 </motion.h2>
             }
         >
@@ -46,29 +46,37 @@ export default function Dashboard() {
                     >
                         <div className="p-8">
                             <motion.div 
-                                className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                                className="grid grid-cols-1 md:grid-cols-4 gap-6"
                                 variants={fadeIn}
                                 initial="initial"
                                 animate="animate"
                             >
                                 <motion.div 
                                     className="p-6 bg-gradient-to-br from-rose-100 to-yellow-100 rounded-xl"
-                                    variants={floatingAnimation}
-                                    initial="initial"
-                                    animate="animate"
                                 >
-                                    <h3 className="text-xl font-semibold text-rose-600 mb-4">Welcome Back!</h3>
-                                    <p className="text-gray-600">You're logged in and ready to go!</p>
+                                    <h3 className="text-xl font-semibold text-rose-600 mb-4">Total Events</h3>
+                                    
                                 </motion.div>
 
                                 <motion.div 
                                     className="p-6 bg-gradient-to-br from-yellow-100 to-rose-100 rounded-xl"
-                                    variants={floatingAnimation}
-                                    initial="initial"
-                                    animate="animate"
                                 >
-                                    <h3 className="text-xl font-semibold text-yellow-600 mb-4">Quick Stats</h3>
-                                    <p className="text-gray-600">Your dashboard overview will appear here.</p>
+                                    <h3 className="text-xl font-semibold text-yellow-600 mb-4">Upcoming Events</h3>
+                                    
+                                </motion.div>
+
+                                <motion.div 
+                                    className="p-6 bg-gradient-to-br from-rose-100 to-yellow-100 rounded-xl"
+                                >
+                                    <h3 className="text-xl font-semibold text-rose-600 mb-4">My Events</h3>
+                                    
+                                </motion.div>
+
+                                <motion.div 
+                                    className="p-6 bg-gradient-to-br from-yellow-100 to-rose-100 rounded-xl"
+                                >
+                                    <h3 className="text-xl font-semibold text-yellow-600 mb-4">Enrolled Events</h3>
+                                    
                                 </motion.div>
                             </motion.div>
 
@@ -80,6 +88,16 @@ export default function Dashboard() {
                             >
                                 <h3 className="text-lg font-medium text-rose-500 mb-4">Recent Activity</h3>
                                 <p className="text-gray-600">Your recent activities will be displayed here.</p>
+                            </motion.div>
+
+                            <motion.div 
+                                className="mt-8 p-6 bg-white/50 rounded-xl border border-rose-100"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3, duration: 0.5 }}
+                            >
+                                <h3 className="text-lg font-medium text-rose-500 mb-4">Friend Suggestions</h3>
+                                <p className="text-gray-600">Your friend suggestions will be displayed here.</p>
                             </motion.div>
                         </div>
                     </motion.div>

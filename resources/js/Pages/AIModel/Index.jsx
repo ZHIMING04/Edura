@@ -6,6 +6,7 @@ import TextInput from '@/Components/TextInput';
 import PrimaryButton from '@/Components/PrimaryButton';
 import InputError from '@/Components/InputError';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 
 const majors = [
     { value: 0, label: 'Engineering' },
@@ -73,24 +74,38 @@ export default function Index({ auth }) {
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Student Success Prediction</h2>}
+            header={
+                <motion.h2 
+                className="text-3xl font-bold leading-tight text-rose-400"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+            >
+                Student Success Prediction
+            </motion.h2>
+            }
         >
             <Head title="Student Success Prediction" />
 
-            <div className="py-12">
+            <div className="py-12 min-h-screen bg-gradient-to-br from-rose-50 to-yellow-50">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
+                    <motion.div 
+                        className="bg-white/80 backdrop-blur-sm shadow-lg sm:rounded-2xl border border-rose-100" 
+                        initial={{ opacity: 0, scale: 0.95 }} 
+                        animate={{ opacity: 1, scale: 1 }} 
+                        transition={{ duration: 0.5 }}
+                    >
+                        <div className="p-8">
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <InputLabel htmlFor="gpa" value="GPA (0-4)" />
+                                        <InputLabel htmlFor="gpa" value="GPA (0-4)" className="text-rose-400 text-2xl" />
                                         <TextInput
                                             id="gpa"
                                             type="number"
                                             name="gpa"
                                             value={data.gpa}
-                                            className="mt-1 block w-full"
+                                            className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-yellow-400 focus:ring focus:ring-yellow-500 focus:ring-opacity-50"
                                             onChange={handleChange}
                                             step="0.1"
                                             min="0"
@@ -100,13 +115,13 @@ export default function Index({ auth }) {
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="year" value="Year (1-5)" />
+                                        <InputLabel htmlFor="year" value="Year (1-5)" className="text-rose-400 text-2xl" />
                                         <TextInput
                                             id="year"
                                             type="number"
                                             name="year"
                                             value={data.year}
-                                            className="mt-1 block w-full"
+                                            className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-yellow-500 focus:ring focus:ring-yellow-500 focus:ring-opacity-50"
                                             onChange={handleChange}
                                             min="1"
                                             max="5"
@@ -115,13 +130,13 @@ export default function Index({ auth }) {
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="cert_count" value="Certificate Count" />
+                                        <InputLabel htmlFor="cert_count" value="Certificate Count" className="text-rose-400 text-2xl" />
                                         <TextInput
                                             id="cert_count"
                                             type="number"
                                             name="cert_count"
                                             value={data.cert_count}
-                                            className="mt-1 block w-full"
+                                            className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-yellow-400 focus:ring focus:ring-yellow-400 focus:ring-opacity-50"
                                             onChange={handleChange}
                                             min="0"
                                         />
@@ -129,13 +144,13 @@ export default function Index({ auth }) {
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="project_score" value="Project Score (0-100)" />
+                                        <InputLabel htmlFor="project_score" value="Project Score (0-100)" className="text-rose-400 text-2xl" />
                                         <TextInput
                                             id="project_score"
                                             type="number"
                                             name="project_score"
                                             value={data.project_score}
-                                            className="mt-1 block w-full"
+                                            className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-yellow-500 focus:ring focus:ring-yellow-400 focus:ring-opacity-50"
                                             onChange={handleChange}
                                             min="0"
                                             max="100"
@@ -144,13 +159,13 @@ export default function Index({ auth }) {
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="mentor_rating" value="Mentor Rating (0-5)" />
+                                        <InputLabel htmlFor="mentor_rating" value="Mentor Rating (0-5)" className="text-rose-400 text-2xl" />
                                         <TextInput
                                             id="mentor_rating"
                                             type="number"
                                             name="mentor_rating"
                                             value={data.mentor_rating}
-                                            className="mt-1 block w-full"
+                                            className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-yellow-400 focus:ring focus:ring-yellow-400 focus:ring-opacity-50"
                                             onChange={handleChange}
                                             step="0.1"
                                             min="0"
@@ -160,12 +175,12 @@ export default function Index({ auth }) {
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="major" value="Major" />
+                                        <InputLabel htmlFor="major" value="Major" className="text-rose-400 text-2xl" />
                                         <select
                                             id="major"
                                             name="major"
                                             value={data.major}
-                                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
+                                            className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-rose-400 focus:ring focus:ring-rose-400 focus:ring-opacity-50"
                                             onChange={handleChange}
                                         >
                                             {majors.map((major) => (
@@ -179,7 +194,7 @@ export default function Index({ auth }) {
                                 </div>
 
                                 <div className="mt-6">
-                                    <h3 className="text-lg font-medium">Activities Joined</h3>
+                                    <h3 className="text-2xl font-medium text-rose-400">Activities Joined</h3>
                                     <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                         {[
                                             { id: 'joined_Pitching', label: 'Pitching' },
@@ -195,9 +210,9 @@ export default function Index({ auth }) {
                                                     type="checkbox"
                                                     checked={data[activity.id] === 1}
                                                     onChange={handleChange}
-                                                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-rose-300 rounded"
                                                 />
-                                                <label htmlFor={activity.id} className="ml-2 block text-sm text-gray-900">
+                                                <label htmlFor={activity.id} className="ml-2 block text-sm text-rose-900">
                                                     {activity.label}
                                                 </label>
                                             </div>
@@ -206,7 +221,10 @@ export default function Index({ auth }) {
                                 </div>
 
                                 <div className="flex items-center">
-                                    <PrimaryButton disabled={loading}>
+                                    <PrimaryButton 
+                                        disabled={loading} 
+                                        className="bg-rose-400 text-white hover:bg-rose-700 transition duration-300 text-2xl"
+                                    >
                                         {loading ? 'Processing...' : 'Get Prediction'}
                                     </PrimaryButton>
                                 </div>
@@ -220,50 +238,48 @@ export default function Index({ auth }) {
 
                             {result && (
                                 <div className="mt-6">
-                                    <h3 className="text-lg font-medium mb-4">Prediction Results</h3>
-                                    <div className="bg-green-50 p-4 border border-green-200 rounded-lg">
-                                        <div className="grid grid-cols-3 gap-4">
-                                            <div className="bg-white p-4 rounded-lg shadow">
-                                                <div className="text-sm text-gray-500">At Risk</div>
-                                                <div className="text-2xl font-bold text-yellow-500">{formatPercentage(result["0"])}</div>
-                                            </div>
-                                            <div className="bg-white p-4 rounded-lg shadow">
-                                                <div className="text-sm text-gray-500">Dropout</div>
-                                                <div className="text-2xl font-bold text-red-500">{formatPercentage(result["1"])}</div>
-                                            </div>
-                                            <div className="bg-white p-4 rounded-lg shadow">
-                                                <div className="text-sm text-gray-500">Success</div>
-                                                <div className="text-2xl font-bold text-green-500">{formatPercentage(result["2"])}</div>
-                                            </div>
+                                    <h3 className="text-lg font-medium mb-4 text-teal-600">Prediction Results</h3>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="bg-yellow-100 p-4 rounded-lg shadow">
+                                            <div className="text-sm text-gray-500">At Risk</div>
+                                            <div className="text-2xl font-bold text-yellow-600">{formatPercentage(result["0"])}</div>
                                         </div>
-                                        
-                                        <div className="mt-4 bg-blue-50 p-3 rounded">
-                                            <div className="text-sm text-blue-800">
-                                                <p className="font-medium">Highest Probability:</p>
-                                                <p className="mt-1">
-                                                    {parseFloat(result["2"]) > parseFloat(result["1"]) && parseFloat(result["2"]) > parseFloat(result["0"]) && (
-                                                        <span className="text-green-600 font-medium">
-                                                            Student is likely to succeed ({formatPercentage(result["2"])})
-                                                        </span>
-                                                    )}
-                                                    {parseFloat(result["1"]) > parseFloat(result["2"]) && parseFloat(result["1"]) > parseFloat(result["0"]) && (
-                                                        <span className="text-red-600 font-medium">
-                                                            Student is at risk of dropping out ({formatPercentage(result["1"])})
-                                                        </span>
-                                                    )}
-                                                    {parseFloat(result["0"]) > parseFloat(result["1"]) && parseFloat(result["0"]) > parseFloat(result["2"]) && (
-                                                        <span className="text-yellow-600 font-medium">
-                                                            Student is at risk and needs support ({formatPercentage(result["0"])})
-                                                        </span>
-                                                    )}
-                                                </p>
-                                            </div>
+                                        <div className="bg-red-100 p-4 rounded-lg shadow">
+                                            <div className="text-sm text-gray-500">Dropout</div>
+                                            <div className="text-2xl font-bold text-red-600">{formatPercentage(result["1"])}</div>
+                                        </div>
+                                        <div className="bg-green-100 p-4 rounded-lg shadow">
+                                            <div className="text-sm text-gray-500">Success</div>
+                                            <div className="text-2xl font-bold text-green-600">{formatPercentage(result["2"])}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="mt-4 bg-blue-50 p-3 rounded">
+                                        <div className="text-sm text-blue-800">
+                                            <p className="font-medium">Highest Probability:</p>
+                                            <p className="mt-1">
+                                                {parseFloat(result["2"]) > parseFloat(result["1"]) && parseFloat(result["2"]) > parseFloat(result["0"]) && (
+                                                    <span className="text-green-600 font-medium">
+                                                        Student is likely to succeed ({formatPercentage(result["2"])})
+                                                    </span>
+                                                )}
+                                                {parseFloat(result["1"]) > parseFloat(result["2"]) && parseFloat(result["1"]) > parseFloat(result["0"]) && (
+                                                    <span className="text-red-600 font-medium">
+                                                        Student is at risk of dropping out ({formatPercentage(result["1"])})
+                                                    </span>
+                                                )}
+                                                {parseFloat(result["0"]) > parseFloat(result["1"]) && parseFloat(result["0"]) > parseFloat(result["2"]) && (
+                                                    <span className="text-yellow-600 font-medium">
+                                                        Student is at risk and needs support ({formatPercentage(result["0"])})
+                                                    </span>
+                                                )}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
                             )}
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
             </div>
         </AuthenticatedLayout>
