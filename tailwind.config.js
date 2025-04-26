@@ -13,7 +13,8 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Cabinet Grotesk', ...defaultTheme.fontFamily.sans],
+                cabinet: ['Cabinet Grotesk', 'sans-serif'],
             },
         },
     },
