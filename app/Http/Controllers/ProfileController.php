@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 class ProfileController extends Controller
 {
@@ -57,7 +58,109 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
-        return Inertia::render('Profile/Edit');
+        $user = $request->user();
+        
+        // Get role from Bouncer roles
+        $role = $user->roles()->first()?->name;
+        $role = strtolower($role ?? $user->role_type);
+        
+        // Ensure role model exists
+        $this->ensureRoleModelExists($user, $role);
+        
+        // Refresh user to get the latest data with the role loaded
+        $user->refresh();
+        $user->load($role, 'roles');
+        
+        return Inertia::render('Profile/Edit', [
+            'mustVerifyEmail' => $user instanceof MustVerifyEmail,
+            'status' => session('status'),
+        ]);
+    }
+
+    /**
+     * Helper method to ensure that the appropriate role model exists
+     */
+    private function ensureRoleModelExists($user, $role): void
+    {
+        try {
+            // Log the current state at the beginning
+            Log::info('Checking if role model exists:', [
+                'user_id' => $user->id,
+                'role' => $role,
+                'has_student' => $user->student ? true : false, 
+                'has_lecturer' => $user->lecturer ? true : false,
+                'has_university' => $user->university ? true : false
+            ]);
+            
+            // Check if role model exists and create if missing
+            switch ($role) {
+                case 'student':
+                    if (!$user->student) {
+                        Log::info('Creating missing student profile for user:', ['user_id' => $user->id]);
+                        $student = Student::create([
+                            'student_id' => Str::uuid()->toString(),
+                            'user_id' => $user->id,
+                        ]);
+                        Log::info('Student profile created:', ['student_id' => $student->student_id]);
+                    }
+                    break;
+                
+                case 'lecturer':
+                    if (!$user->lecturer) {
+                        Log::info('Creating missing lecturer profile for user:', ['user_id' => $user->id]);
+                        try {
+                            $lecturer = Lecturer::create([
+                                'lecturer_id' => Str::uuid()->toString(),
+                                'user_id' => $user->id,
+                            ]);
+                            Log::info('Lecturer profile created:', ['lecturer_id' => $lecturer->lecturer_id]);
+                        } catch (\Exception $e) {
+                            Log::error('Lecturer creation failed:', [
+                                'error' => $e->getMessage(),
+                                'trace' => $e->getTraceAsString()
+                            ]);
+                            throw $e;
+                        }
+                    }
+                    break;
+                
+                case 'university':
+                    if (!$user->university) {
+                        Log::info('Creating missing university profile for user:', ['user_id' => $user->id]);
+                        try {
+                            $university = University::create([
+                                'university_id' => Str::uuid()->toString(),
+                                'user_id' => $user->id,
+                                'name' => 'Universiti Malaysia Pahang',
+                            ]);
+                            Log::info('University profile created:', ['university_id' => $university->university_id]);
+                        } catch (\Exception $e) {
+                            Log::error('University creation failed:', [
+                                'error' => $e->getMessage(),
+                                'trace' => $e->getTraceAsString()
+                            ]);
+                            throw $e;
+                        }
+                    }
+                    break;
+            }
+            
+            // Log the final state
+            $user->refresh();
+            Log::info('Role model check complete:', [
+                'user_id' => $user->id,
+                'role' => $role,
+                'has_student' => $user->student ? true : false, 
+                'has_lecturer' => $user->lecturer ? true : false,
+                'has_university' => $user->university ? true : false
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to create role profile: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'role' => $role,
+                'exception' => $e,
+            ]);
+        }
     }
 
     /**
@@ -65,10 +168,16 @@ class ProfileController extends Controller
      */
     public function update(Request $request): RedirectResponse
     {
-
         try {
             $user = $request->user();
-            $role = strtolower($user->role);
+            // Get role from Bouncer roles
+            $role = $user->roles()->first()?->name;
+            // Make sure we have a role value, fallback to role_type if needed
+            $role = strtolower($role ?? $user->role_type ?? '');
+            
+            if (empty($role)) {
+                return back()->with('error', 'No role assigned to user');
+            }
 
             // Remove common validation since these fields might not always be updated
             // Only validate what's being updated
@@ -90,6 +199,9 @@ class ProfileController extends Controller
                 }
             }
 
+            // Ensure role model exists before updating
+            $this->ensureRoleModelExists($user, $role);
+
             // Update role-specific profile
             switch ($role) {
                 case 'student':
@@ -101,8 +213,13 @@ class ProfileController extends Controller
                 case 'university':
                     $this->updateUniversityProfile($user, $request);
                     break;
+                default:
+                    Log::warning('Unhandled role type for profile update', [
+                        'user_id' => $user->id,
+                        'role' => $role
+                    ]);
+                    return back()->with('error', 'Unsupported role type');
             }
-
 
             return back()->with('success', 'Profile updated successfully.');
         } catch (\Exception $e) {
@@ -238,28 +355,115 @@ class ProfileController extends Controller
 
     public function updateLecturer(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'department' => 'required|string|max:255',
-            'specialization' => 'nullable|string|max:255',
-            'contact_number' => 'nullable|string|max:255',
-            'linkedin' => 'nullable|string|max:255',
-            'bio' => 'nullable|string'
-        ]);
+        try {
+            Log::info('Updating lecturer profile:', [
+                'user_id' => $request->user()->id,
+                'request_data' => $request->all()
+            ]);
+            
+            $validated = $request->validate([
+                'department' => 'required|string|max:255',
+                'specialization' => 'required|string|max:255',
+                'faculty' => 'required|string|max:255',
+                'university' => 'required|string|max:255',
+                'contact_number' => 'nullable|string|max:255',
+                'linkedin' => 'nullable|string|max:255',
+                'bio' => 'nullable|string'
+            ]);
 
-        return $this->updateRoleProfile($request->user()->lecturer, $validated);
+            $lecturer = $request->user()->lecturer;
+            if (!$lecturer) {
+                Log::error('Lecturer record not found for user:', ['user_id' => $request->user()->id]);
+                return back()->with('error', 'Lecturer profile not found.');
+            }
+
+            $lecturer->update($validated);
+            
+            Log::info('Lecturer profile updated:', [
+                'lecturer_id' => $lecturer->lecturer_id,
+                'updated_data' => $lecturer->fresh()->toArray()
+            ]);
+
+            return back()->with('success', 'Profile updated successfully.');
+        } catch (\Exception $e) {
+            Log::error('Failed to update lecturer profile:', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->with('error', 'Failed to update profile: ' . $e->getMessage());
+        }
     }
 
     public function updateUniversity(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'university_name' => 'required|string|max:255',
-            'address' => 'nullable|string|max:255',
-            'contact_number' => 'nullable|string|max:255',
-            'website' => 'nullable|string|max:255',
-            'description' => 'nullable|string'
-        ]);
-
-        return $this->updateRoleProfile($request->user()->university, $validated);
+        try {
+            Log::info('Updating university profile:', [
+                'user_id' => $request->user()->id,
+                'request_data' => $request->all()
+            ]);
+            
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'location' => 'nullable|string|max:255',
+                'contact_email' => 'nullable|email|max:255',
+                'website' => 'nullable|url|max:255',
+                'contact_number' => 'nullable|string|max:20',
+                'bio' => 'nullable|string'
+            ]);
+            
+            $university = $request->user()->university;
+            if (!$university) {
+                Log::error('University record not found for user:', ['user_id' => $request->user()->id]);
+                return back()->with('error', 'University profile not found.');
+            }
+            
+            // Check if name is in the allowed list of values
+            $allowedUniversityNames = [
+                'Universiti Malaysia Pahang',
+                'Universiti Malaysia Sabah',
+                'Universiti Malaysia Terengganu',
+                'Universiti Kebangsaan Malaysia',
+                'Universiti Malaya',
+                'Universiti Sains Malaysia',
+                'Universiti Putra Malaysia',
+                'Universiti Teknologi Malaysia',
+                'Universiti Utara Malaysia',
+                'Universiti Islam Antarabangsa Malaysia',
+                'Universiti Pendidikan Sultan Idris',
+                'Universiti Sains Islam Malaysia',
+                'Universiti Teknologi MARA',
+                'Universiti Malaysia Sarawak',
+                'Universiti Teknikal Malaysia Melaka',
+                'Universiti Malaysia Perlis',
+                'Universiti Tun Hussein Onn Malaysia',
+                'Universiti Sultan Zainal Abidin',
+                'Universiti Pertahanan Nasional Malaysia',
+                'Universiti Malaysia Kelantan'
+            ];
+            
+            if (!in_array($validated['name'], $allowedUniversityNames)) {
+                Log::warning('Invalid university name provided:', [
+                    'user_id' => $request->user()->id,
+                    'provided_name' => $validated['name']
+                ]);
+                return back()->with('error', 'Please select a valid university name from the list.');
+            }
+            
+            $university->update($validated);
+            
+            Log::info('University profile updated:', [
+                'university_id' => $university->university_id,
+                'updated_data' => $university->fresh()->toArray()
+            ]);
+            
+            return back()->with('success', 'Profile updated successfully.');
+        } catch (\Exception $e) {
+            Log::error('Failed to update university profile:', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->with('error', 'Failed to update profile: ' . $e->getMessage());
+        }
     }
 
     /**

@@ -24,49 +24,18 @@ class EventController extends Controller
         $validationRules = [
             'title' => 'required|string|max:255',
             'date' => 'required|date',
-            'time' => 'required',
-            'location' => 'required|string|max:255',
             'description' => 'required|string',
-            'event_type' => 'required|in:Workshop,Competition,Seminar',
-            'category' => 'required|in:Ptching, Marketing, Finance, Leadership, Networking',
-            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'location' => 'required|string|max:255',
+            'max_participants' => 'required|integer|min:1',
             'is_external' => 'required|boolean',
         ];
 
-        // Add validation rules based on event type (external or internal)
+        // Add registration_url validation if event is external
         if ($request->boolean('is_external')) {
-            $validationRules = array_merge($validationRules, [
-                'registration_url' => 'required|url',
-                'organizer_name' => 'required|string|max:255',
-                'organizer_website' => 'nullable|url',
-            ]);
-        } else {
-            $validationRules = array_merge($validationRules, [
-                'max_participants' => 'required|integer|min:1',
-                'registration_url' => 'nullable',
-                'organizer_name' => 'nullable',
-                'organizer_website' => 'nullable',
-            ]);
-            
-            // Add team event specific validation if it's a team event
-            if ($request->boolean('is_team_event')) {
-                $validationRules = array_merge($validationRules, [
-                    'min_team_members' => 'required|integer|min:2',
-                    'max_team_members' => 'required|integer|min:2|gte:min_team_members',
-                ]);
-            }
+            $validationRules['registration_url'] = 'required|url';
         }
 
         $validated = $request->validate($validationRules);
-
-        // Handle image upload
-        $coverImagePath = null;
-        if ($request->hasFile('cover_image')) {
-            $file = $request->file('cover_image');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('images/EventCover'), $filename);
-            $coverImagePath = 'images/EventCover/' . $filename;
-        }
 
         // Calculate initial status based on event date
         $eventDate = Carbon::parse($validated['date'])->startOfDay();
@@ -85,18 +54,15 @@ class EventController extends Controller
             'event_id' => Str::uuid()->toString(),
             'title' => $validated['title'],
             'date' => $validated['date'],
-            'time' => Carbon::parse($validated['time'])->format('H:i:s'),
             'location' => $validated['location'],
             'description' => $validated['description'],
             'status' => $status,
-            'event_type' => $validated['event_type'],
-            'category' => $validated['category'],
             'creator_id' => auth()->id(),
-            'cover_image' => $coverImagePath,
             'is_external' => $validated['is_external'],
             'registration_url' => $validated['registration_url'] ?? null,
-            'organizer_name' => $validated['organizer_name'] ?? null,
-            'organizer_website' => $validated['organizer_website'] ?? null,
+            'event_type' => 'Workshop', // Default value
+            'category' => 'Networking', // Default value
+            'time' => Carbon::now()->format('H:i:s'), // Default value
         ];
 
         // Add non-external event specific fields
@@ -183,64 +149,49 @@ class EventController extends Controller
 
     public function update(Request $request, Event $event)
     {
+        // Check if user is the creator
+        if ($event->creator_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
-        // Basic validation rules
-        $commonRules = [
+        // Validation rules
+        $validationRules = [
             'title' => 'required|string|max:255',
             'date' => 'required|date',
-            'time' => 'required',
-            'location' => 'required|string|max:255',
             'description' => 'required|string',
-            'event_type' => 'required|in:Workshop,Competition,Seminar',
-            'category' => 'required|in:Ptching, Marketing, Finance, Leadership, Networking',
+            'location' => 'required|string|max:255',
             'status' => 'required|in:Upcoming,Ongoing,Completed',
-            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_external' => 'required|boolean',
-            'is_team_event' => 'required|boolean',
         ];
 
-        // Add specific rules based on event type
+        // Add conditional validation rules
         if ($request->boolean('is_external')) {
-            $specificRules = [
-                'registration_url' => 'required|url',
-                'organizer_name' => 'required|string|max:255',
-                'organizer_website' => 'nullable|url',
-            ];
+            $validationRules['registration_url'] = 'required|url';
         } else {
-            $specificRules = [
-                'max_participants' => 'required|integer|min:1',
-                'registration_url' => 'nullable',
-                'organizer_name' => 'nullable',
-                'organizer_website' => 'nullable',
-            ];
+            $validationRules['max_participants'] = 'required|integer|min:1';
         }
 
-        $validated = $request->validate(array_merge($commonRules, $specificRules));
+        $validated = $request->validate($validationRules);
 
-        // Start with validated data
-        $dataToUpdate = $validated;
+        // Handle data updates
+        $eventData = [
+            'title' => $validated['title'],
+            'date' => $validated['date'],
+            'description' => $validated['description'],
+            'location' => $validated['location'],
+            'status' => $validated['status'],
+            'is_external' => $validated['is_external'],
+        ];
 
-        // Handle image upload if provided
-        if ($request->hasFile('cover_image')) {
-            // Delete old image if exists
-            if ($event->cover_image) {
-                Storage::delete($event->cover_image);
-            }
-            
-            $file = $request->file('cover_image');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('images/EventCover'), $filename);
-            $dataToUpdate['cover_image'] = 'images/EventCover/' . $filename;
+        // Add conditional fields
+        if ($validated['is_external']) {
+            $eventData['registration_url'] = $validated['registration_url'];
         } else {
-            // Remove cover_image from update data if no new image is uploaded
-            unset($dataToUpdate['cover_image']);
+            $eventData['max_participants'] = $validated['max_participants'];
         }
-
-        // Format time
-        $dataToUpdate['time'] = Carbon::parse($validated['time'])->format('H:i:s');
 
         // Update the event
-        $event->update($dataToUpdate);
+        $event->update($eventData);
 
         return redirect()->route('events.my-events')
             ->with('message', 'Event updated successfully');

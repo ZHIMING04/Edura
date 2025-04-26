@@ -31,6 +31,24 @@ export default function AuthenticatedLayout({ header, children }) {
                                     Dashboard
                                 </NavLink>
                                 <NavLink
+                                    href={route('projects.index')}
+                                    active={route().current('projects.*')}
+                                >
+                                    Projects
+                                </NavLink>
+                                <NavLink
+                                    href={route('events.index')}
+                                    active={route().current('events.*')}
+                                >
+                                    Events
+                                </NavLink>
+                                <NavLink
+                                    href={route('reports.index')}
+                                    active={route().current('reports.*')}
+                                >
+                                    Reports
+                                </NavLink>
+                                <NavLink
                                     href={route('ai-model.index')}
                                     active={route().current('ai-model.index')}
                                 >
@@ -145,6 +163,24 @@ export default function AuthenticatedLayout({ header, children }) {
                             active={route().current('dashboard')}
                         >
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('projects.index')}
+                            active={route().current('projects.*')}
+                        >
+                            Projects
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('events.index')}
+                            active={route().current('events.*')}
+                        >
+                            Events
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('reports.index')}
+                            active={route().current('reports.*')}
+                        >
+                            Reports
                         </ResponsiveNavLink>
                     </div>
 
