@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\CertificateTemplateController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -60,6 +62,24 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/events/{event}/unenroll', [EnrollmentController::class, 'destroy'])->name('events.unenroll');
     Route::get('/events/{event}/enrolled-users', [EventController::class, 'getEnrolledUsers'])
         ->name('events.enrolled-users');
+});
+
+//Certificate Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/student/certificates', [CertificateController::class, 'studentCertificates'])
+        ->name('student.certificates');
+    Route::get('/certificates/{certificate}/download', [CertificateController::class, 'download'])
+        ->name('certificates.download');
+});
+
+// Certificate Template Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/events/{event}/certificates/create', [CertificateTemplateController::class, 'create'])
+        ->name('certificates.create');
+    Route::post('/events/{event}/certificates', [CertificateTemplateController::class, 'store'])
+        ->name('certificates.store');
+    Route::get('/events/{event}/certificates/{template}/preview', [CertificateTemplateController::class, 'preview'])
+        ->name('certificates.preview');
 });
 
 require __DIR__.'/auth.php';
