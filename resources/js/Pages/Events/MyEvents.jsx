@@ -18,23 +18,23 @@ export default function MyEvents({ auth, organizedEvents, enrolledEvents }) {
     <AuthenticatedLayout user={auth.user}>
       <Head title="My Events" />
 
-      <div className="py-12">
+      <div className="py-12 min-h-screen bg-gradient-to-br from-rose-50 to-yellow-50">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
           <div className="mb-6 flex justify-between items-center">
-            <h1 className="text-2xl font-semibold text-gray-900">My Events</h1>
-            <Link href={route('events.create')} className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
+            <h1 className="text-3xl font-bold leading-tight text-rose-400">My Events</h1>
+            <Link href={route('events.create')} className="px-4 py-2 bg-rose-400 text-white rounded-md hover:bg-rose-700">
               Create New Event
             </Link>
           </div>
 
           {/* Tabs */}
-          <div className="border-b border-gray-200 mb-6">
+          <div className="border-b border-rose-200 mb-6">
             <nav className="-mb-px flex space-x-8">
               <button
                 onClick={() => setActiveTab('organized')}
                 className={`${
                   activeTab === 'organized'
-                    ? 'border-indigo-500 text-indigo-600'
+                    ? 'border-rose-500 text-rose-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
               >
@@ -44,7 +44,7 @@ export default function MyEvents({ auth, organizedEvents, enrolledEvents }) {
                 onClick={() => setActiveTab('enrolled')}
                 className={`${
                   activeTab === 'enrolled'
-                    ? 'border-indigo-500 text-indigo-600'
+                    ? 'border-rose-500 text-rose-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
               >
@@ -57,13 +57,13 @@ export default function MyEvents({ auth, organizedEvents, enrolledEvents }) {
           {activeTab === 'organized' && (
             <div>
               {organizedEvents && organizedEvents.length > 0 ? (
-                <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div className="bg-white/80 backdrop-blur-sm shadow-lg sm:rounded-2xl border border-rose-100">
                   <div className="divide-y divide-gray-200">
                     {organizedEvents.map((event) => (
                       <div key={event.event_id} className="p-6">
                         <div className="flex flex-col md:flex-row md:justify-between md:items-center">
                           <div className="flex-1 min-w-0">
-                            <h2 className="text-xl font-semibold text-gray-900 truncate">{event.title}</h2>
+                            <h2 className="text-xl font-semibold text-rose-500 truncate">{event.title}</h2>
                             <p className="mt-1 text-sm text-gray-500">
                               {formatDate(event.date)} • {event.location}
                             </p>
@@ -71,7 +71,7 @@ export default function MyEvents({ auth, organizedEvents, enrolledEvents }) {
                               <span className={`px-2 py-1 text-xs rounded-full ${getStatusClass(event.status)}`}>
                                 {event.status}
                               </span>
-                              <span className="ml-4 text-sm text-gray-500">
+                              <span className="ml-4 text-sm text-yellow-500">
                                 {event.enrolled_count} / {event.max_participants} enrolled
                               </span>
                             </div>
@@ -80,14 +80,14 @@ export default function MyEvents({ auth, organizedEvents, enrolledEvents }) {
                           <div className="mt-4 md:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                             <Link 
                               href={route('events.edit', event.event_id)} 
-                              className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                              className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
                             >
                               Edit
                             </Link>
 
                             <Link 
                               href={route('events.enrolled-users', event.event_id)} 
-                              className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                              className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
                             >
                               View Attendees
                             </Link>
@@ -111,7 +111,7 @@ export default function MyEvents({ auth, organizedEvents, enrolledEvents }) {
                   <p className="text-gray-500">You haven't organized any events yet.</p>
                   <Link 
                     href={route('events.create')} 
-                    className="mt-4 inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                    className="mt-4 inline-flex items-center px-4 py-2 bg-rose-400 text-white rounded-md hover:bg-rose-700"
                   >
                     Create Your First Event
                   </Link>
@@ -123,7 +123,7 @@ export default function MyEvents({ auth, organizedEvents, enrolledEvents }) {
           {activeTab === 'enrolled' && (
             <div>
               {enrolledEvents && enrolledEvents.length > 0 ? (
-                <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div className="bg-white/80 backdrop-blur-sm shadow-lg sm:rounded-2xl border border-rose-100">
                   <div className="divide-y divide-gray-200">
                     {enrolledEvents.map((event) => (
                       <div key={event.event_id} className="p-6">
@@ -174,7 +174,7 @@ export default function MyEvents({ auth, organizedEvents, enrolledEvents }) {
                   <p className="text-gray-500">You're not enrolled in any events yet.</p>
                   <Link 
                     href={route('events.index')} 
-                    className="mt-4 inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                    className="mt-4 inline-flex items-center px-4 py-2 bg-rose-400 text-white rounded-md hover:bg-rose-700"
                   >
                     Browse Events
                   </Link>

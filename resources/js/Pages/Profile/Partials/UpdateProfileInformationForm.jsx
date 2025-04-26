@@ -21,19 +21,19 @@ export default function UpdateProfileInformationForm({ mustVerifyEmail, status, 
     return (
         <section className={className}>
             <header>
-                <h2 className="text-lg font-medium text-gray-900">Profile Information</h2>
-                <p className="mt-1 text-sm text-gray-600">
+                <h2 className="text-lg font-medium text-rose-400">Profile Information</h2>
+                <p className="mt-1 text-sm text-yellow-600">
                     Update your account's profile information and email address.
                 </p>
             </header>
 
             <form onSubmit={submit} className="mt-6 space-y-6">
                 <div>
-                    <InputLabel htmlFor="name" value="Name" />
+                    <InputLabel htmlFor="name" value="Name" className="text-rose-400 text-2xl"/>
 
                     <TextInput
                         id="name"
-                        className="mt-1 block w-full"
+                        className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-yellow-400 focus:ring focus:ring-yellow-500 focus:ring-opacity-50"
                         value={data.name}
                         onChange={(e) => setData('name', e.target.value)}
                         required
@@ -44,12 +44,12 @@ export default function UpdateProfileInformationForm({ mustVerifyEmail, status, 
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="email" value="Email" />
+                    <InputLabel htmlFor="email" value="Email" className="text-rose-400 text-2xl"/>
 
                     <TextInput
                         id="email"
                         type="email"
-                        className="mt-1 block w-full"
+                        className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-yellow-400 focus:ring focus:ring-yellow-500 focus:ring-opacity-50"
                         value={data.email}
                         onChange={(e) => setData('email', e.target.value)}
                         required
@@ -67,7 +67,7 @@ export default function UpdateProfileInformationForm({ mustVerifyEmail, status, 
                                 href={route('verification.send')}
                                 method="post"
                                 as="button"
-                                className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                className="underline text-sm text-yellow-600 hover:text-yellow-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow -500"
                             >
                                 Click here to re-send the verification email.
                             </Link>

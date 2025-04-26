@@ -27,21 +27,21 @@ export default function Create({ auth }) {
         <AuthenticatedLayout user={auth.user}>
             <Head title="Create Event" />
 
-            <div className="py-12">
+            <div className="py-12 min-h-screen bg-gradient-to-br from-rose-50 to-yellow-50">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div className="bg-white/80 backdrop-blur-sm shadow-lg sm:rounded-2xl border border-rose-100">
                         <div className="p-6">
-                            <h2 className="text-2xl font-semibold mb-6">Create New Event</h2>
+                            <h2 className="text-2xl font-bold mb-6 text-rose-400">Create New Event</h2>
                             
                             <form onSubmit={submit} className="space-y-6">
                                 <div>
-                                    <InputLabel htmlFor="title" value="Event Title" />
+                                    <InputLabel htmlFor="title" value="Event Title" className="text-rose-400 text-2xl" />
                                     <TextInput
                                         id="title"
                                         type="text"
                                         name="title"
                                         value={data.title}
-                                        className="mt-1 block w-full"
+                                        className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
                                         onChange={(e) => setData('title', e.target.value)}
                                         required
                                     />
@@ -49,12 +49,12 @@ export default function Create({ auth }) {
                                 </div>
 
                                 <div>
-                                    <InputLabel htmlFor="description" value="Description" />
+                                    <InputLabel htmlFor="description" value="Description" className="text-rose-400 text-2xl" />
                                     <textarea
                                         id="description"
                                         name="description"
                                         value={data.description}
-                                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
                                         rows="4"
                                         onChange={(e) => setData('description', e.target.value)}
                                         required
@@ -63,13 +63,13 @@ export default function Create({ auth }) {
                                 </div>
 
                                 <div>
-                                    <InputLabel htmlFor="date" value="Event Date" />
+                                    <InputLabel htmlFor="date" value="Event Date" className="text-rose-400 text-2xl" />
                                     <TextInput
                                         id="date"
                                         type="date"
                                         name="date"
                                         value={data.date}
-                                        className="mt-1 block w-full"
+                                        className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
                                         onChange={(e) => setData('date', e.target.value)}
                                         required
                                     />
@@ -77,13 +77,13 @@ export default function Create({ auth }) {
                                 </div>
 
                                 <div>
-                                    <InputLabel htmlFor="location" value="Location" />
+                                    <InputLabel htmlFor="location" value="Location" className="text-rose-400 text-2xl" />
                                     <TextInput
                                         id="location"
                                         type="text"
                                         name="location"
                                         value={data.location}
-                                        className="mt-1 block w-full"
+                                        className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
                                         onChange={(e) => setData('location', e.target.value)}
                                         required
                                     />
@@ -91,13 +91,13 @@ export default function Create({ auth }) {
                                 </div>
 
                                 <div>
-                                    <InputLabel htmlFor="max_participants" value="Maximum Participants" />
+                                    <InputLabel htmlFor="max_participants" value="Maximum Participants" className="text-rose-400 text-2xl" />
                                     <TextInput
                                         id="max_participants"
                                         type="number"
                                         name="max_participants"
                                         value={data.max_participants}
-                                        className="mt-1 block w-full"
+                                        className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
                                         onChange={(e) => setData('max_participants', e.target.value)}
                                         required
                                         min="1"
@@ -112,20 +112,20 @@ export default function Create({ auth }) {
                                         name="is_external"
                                         checked={data.is_external}
                                         onChange={(e) => setData('is_external', e.target.checked)}
-                                        className="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+                                        className="rounded border-yellow-300 text-yellow-600 shadow-sm focus:ring-yellow-500"
                                     />
-                                    <InputLabel htmlFor="is_external" value="External Event" />
+                                    <InputLabel htmlFor="is_external" value="External Event" className="text-rose-400 text-2xl" />
                                 </div>
 
                                 {data.is_external && (
                                     <div>
-                                        <InputLabel htmlFor="registration_url" value="Registration URL" />
+                                        <InputLabel htmlFor="registration_url" value="Registration URL" className="text-rose-400 text-2xl" />
                                         <TextInput
                                             id="registration_url"
                                             type="url"
                                             name="registration_url"
                                             value={data.registration_url}
-                                            className="mt-1 block w-full"
+                                            className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
                                             onChange={(e) => setData('registration_url', e.target.value)}
                                             required
                                         />
