@@ -6,6 +6,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CertificateTemplateController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -78,6 +79,13 @@ Route::middleware(['auth'])->group(function () {
         ->name('certificates.store');
     Route::get('/events/{event}/certificates/{template}/preview', [CertificateTemplateController::class, 'preview'])
         ->name('certificates.preview');
+});
+
+//Report Routes
+Route::middleware(['auth'])->group(function () {
+    // Reports route - make sure this is inside the auth middleware group
+    Route::get('/reports', [ReportController::class, 'index'])
+        ->name('reports.index');
 });
 
 // AI Model Routes
