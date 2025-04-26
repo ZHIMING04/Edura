@@ -7,6 +7,7 @@ use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CertificateTemplateController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ProjectController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -86,6 +87,36 @@ Route::middleware(['auth'])->group(function () {
     // Reports route - make sure this is inside the auth middleware group
     Route::get('/reports', [ReportController::class, 'index'])
         ->name('reports.index');
+});
+
+// Project Tracking Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/projects', [ProjectController::class, 'index'])
+        ->name('projects.index');
+    
+    Route::post('/projects', [ProjectController::class, 'store'])
+        ->name('projects.store');
+        
+    Route::get('/projects/create', [ProjectController::class, 'create'])
+        ->name('projects.create');
+        
+    Route::get('/projects/{project}', [ProjectController::class, 'show'])
+        ->name('projects.show');
+        
+    Route::put('/projects/{project}', [ProjectController::class, 'update'])
+        ->name('projects.update');
+        
+    Route::post('/projects/{project}/updates', [ProjectController::class, 'addUpdate'])
+        ->name('projects.updates.store');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Lecturer tracking routes
+    Route::get('/lecturer/dashboard', [ProjectController::class, 'lecturerDashboard'])
+        ->name('lecturer.dashboard');
+        
+    Route::get('/projects/{project}/analytics', [ProjectController::class, 'projectAnalytics'])
+        ->name('projects.analytics');
 });
 
 // AI Model Routes
