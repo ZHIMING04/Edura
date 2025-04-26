@@ -76,13 +76,13 @@ export default function MyEvents({ auth, organizedEvents, enrolledEvents }) {
           {activeTab === 'organized' && (
             <div>
               {organizedEvents && organizedEvents.length > 0 ? (
-                <div className="bg-white/80 backdrop-blur-sm shadow-lg sm:rounded-2xl border border-rose-100">
+                <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                   <div className="divide-y divide-gray-200">
                     {organizedEvents.map((event) => (
                       <div key={event.event_id} className="p-6">
                         <div className="flex flex-col md:flex-row md:justify-between md:items-center">
                           <div className="flex-1 min-w-0">
-                            <h2 className="text-xl font-semibold text-rose-500 truncate">{event.title}</h2>
+                            <h2 className="text-xl font-semibold text-gray-900 truncate">{event.title}</h2>
                             <p className="mt-1 text-sm text-gray-500">
                               {formatDate(event.date)} • {event.location}
                             </p>
@@ -90,7 +90,7 @@ export default function MyEvents({ auth, organizedEvents, enrolledEvents }) {
                               <span className={`px-2 py-1 text-xs rounded-full ${getStatusClass(event.status)}`}>
                                 {event.status}
                               </span>
-                              <span className="ml-4 text-sm text-yellow-500">
+                              <span className="ml-4 text-sm text-gray-500">
                                 {event.enrolled_count} / {event.max_participants} enrolled
                               </span>
                             </div>
@@ -99,12 +99,14 @@ export default function MyEvents({ auth, organizedEvents, enrolledEvents }) {
                           <div className="mt-4 md:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                             <Link 
                               href={route('events.edit', event.event_id)} 
-                              className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
+                              className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
                               Edit
                             </Link>
 
-
+                            <button 
+                              onClick={() => handleViewAttendees(event)}
+                              className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
                               View Attendees
                             </button>
@@ -128,7 +130,7 @@ export default function MyEvents({ auth, organizedEvents, enrolledEvents }) {
                   <p className="text-gray-500">You haven't organized any events yet.</p>
                   <Link 
                     href={route('events.create')} 
-                    className="mt-4 inline-flex items-center px-4 py-2 bg-rose-400 text-white rounded-md hover:bg-rose-700"
+                    className="mt-4 inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
                   >
                     Create Your First Event
                   </Link>
@@ -136,7 +138,6 @@ export default function MyEvents({ auth, organizedEvents, enrolledEvents }) {
               )}
             </div>
           )}
-
           {activeTab === 'enrolled' && (
             <div>
               {enrolledEvents && enrolledEvents.length > 0 ? (
@@ -251,4 +252,4 @@ function getStatusClass(status) {
     default:
       return 'bg-gray-100 text-gray-800';
   }
-} 
+}
