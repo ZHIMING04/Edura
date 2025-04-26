@@ -66,9 +66,9 @@ export default function Edit({ auth, mustVerifyEmail, status }) {
         <AuthenticatedLayout user={auth.user}>
             <Head title="Profile" />
 
-            <div className="py-12">
+            <div className="py-12 min-h-screen bg-gradient-to-br from-rose-50 to-yellow-50">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-                    <div className="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                    <div className="p-4 sm:p-8 bg-white/80 backdrop-blur-sm shadow-lg sm:rounded-2xl border border-rose-100">
                         <UpdateProfileInformationForm
                             mustVerifyEmail={mustVerifyEmail}
                             status={status}
@@ -77,19 +77,19 @@ export default function Edit({ auth, mustVerifyEmail, status }) {
                     </div>
 
                     {/* Role-specific profile form */}
-                    <div className="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                    <div className="p-4 sm:p-8 bg-white/80 backdrop-blur-sm shadow-lg sm:rounded-2xl border border-rose-100">
                         <div className="max-w-xl">
-                            <h2 className="text-lg font-medium text-gray-900">
+                            <h2 className="text-lg font-medium text-rose-400">
                                 {role ? `${role.charAt(0).toUpperCase() + role.slice(1)} Profile Information` : 'Profile Information'}
                             </h2>
-                            <p className="mt-1 text-sm text-gray-600">
+                            <p className="mt-1 text-sm text-yellow-600">
                                 Update your role-specific profile information.
                             </p>
                         </div>
                         {renderRoleProfileForm()}
                     </div>
 
-                    <div className="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                    <div className="p-4 sm:p-8 bg-white/80 backdrop-blur-sm shadow-lg sm:rounded-2xl border border-rose-100">
                         <UpdatePasswordForm className="max-w-xl" />
                     </div>
                 </div>
