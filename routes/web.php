@@ -4,8 +4,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EnrollmentController;
-use App\Http\Controllers\CertificateController;
-use App\Http\Controllers\CertificateTemplateController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -62,4 +60,29 @@ Route::middleware(['auth'])->group(function () {
         ->name('events.enrolled-users');
 });
 
+//Certificate Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/student/certificates', [CertificateController::class, 'studentCertificates'])
+        ->name('student.certificates');
+    Route::get('/certificates/{certificate}/download', [CertificateController::class, 'download'])
+        ->name('certificates.download');
+});
 
+// Certificate Template Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/events/{event}/certificates/create', [CertificateTemplateController::class, 'create'])
+        ->name('certificates.create');
+    Route::post('/events/{event}/certificates', [CertificateTemplateController::class, 'store'])
+        ->name('certificates.store');
+    Route::get('/events/{event}/certificates/{template}/preview', [CertificateTemplateController::class, 'preview'])
+        ->name('certificates.preview');
+});
+
+// AI Model Routes
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/ai-model', [AIModelController::class, 'index'])->name('ai-model.index');
+    Route::get('/ai-model/recommend-event', [AIModelController::class, 'showRecommendEvent'])
+        ->name('ai-model.recommend-event.show');
+});
+
+require _DIR_.'/auth.php';
