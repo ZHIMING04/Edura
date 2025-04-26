@@ -57,11 +57,7 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
-        return Inertia::render('Profile/Edit', [
-            'user' => $request->user()->load(['department_staff' => function($query) {
-                $query->select('staff_id', 'user_id', /* other fields */);
-            }])
-        ]);
+        return Inertia::render('Profile/Edit');
     }
 
     /**
