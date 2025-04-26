@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\CertificateTemplateController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -60,11 +62,4 @@ Route::middleware(['auth'])->group(function () {
         ->name('events.enrolled-users');
 });
 
-// AI Model Routes
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/ai-model', [AIModelController::class, 'index'])->name('ai-model.index');
-    Route::get('/ai-model/recommend-event', [AIModelController::class, 'showRecommendEvent'])
-        ->name('ai-model.recommend-event.show');
-});
 
-require __DIR__.'/auth.php';
