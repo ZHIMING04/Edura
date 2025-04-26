@@ -2,9 +2,13 @@ import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { format } from 'date-fns';
+import axios from 'axios';
 
 export default function MyEvents({ auth, organizedEvents, enrolledEvents }) {
   const [activeTab, setActiveTab] = useState('organized');
+  const [showAttendeesModal, setShowAttendeesModal] = useState(false);
+  const [attendees, setAttendees] = useState([]);
+  const [currentEvent, setCurrentEvent] = useState(null);
   
   const formatDate = (dateString) => {
     try {
@@ -12,6 +16,21 @@ export default function MyEvents({ auth, organizedEvents, enrolledEvents }) {
     } catch (e) {
       return dateString;
     }
+  };
+
+  const fetchAttendees = async (eventId) => {
+    try {
+      const response = await axios.get(route('events.enrolled-users', eventId));
+      setAttendees(response.data.users);
+      setShowAttendeesModal(true);
+    } catch (error) {
+      console.error('Error fetching attendees:', error);
+    }
+  };
+
+  const handleViewAttendees = (event) => {
+    setCurrentEvent(event);
+    fetchAttendees(event.event_id);
   };
 
   return (
@@ -85,12 +104,12 @@ export default function MyEvents({ auth, organizedEvents, enrolledEvents }) {
                               Edit
                             </Link>
 
-                            <Link 
-                              href={route('events.enrolled-users', event.event_id)} 
+                            <button 
+                              onClick={() => handleViewAttendees(event)}
                               className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
                               View Attendees
-                            </Link>
+                            </button>
                             
                             {event.status === 'Completed' && (
                               <Link 
@@ -184,6 +203,40 @@ export default function MyEvents({ auth, organizedEvents, enrolledEvents }) {
           )}
         </div>
       </div>
+
+      {/* Attendees Modal */}
+      {showAttendeesModal && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium text-gray-900">
+                {currentEvent?.title} - Attendees
+              </h3>
+              <button
+                onClick={() => setShowAttendeesModal(false)}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <span className="sr-only">Close</span>
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            {attendees.length > 0 ? (
+              <ul className="divide-y divide-gray-200">
+                {attendees.map((name, index) => (
+                  <li key={index} className="py-3">
+                    {name}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500 text-center py-4">No attendees found.</p>
+            )}
+          </div>
+        </div>
+      )}
     </AuthenticatedLayout>
   );
 }
