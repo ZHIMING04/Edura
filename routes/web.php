@@ -87,4 +87,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('ai-model.recommend-event.show');
 });
 
-require _DIR_.'/auth.php';
+require __DIR__.'/auth.php';
