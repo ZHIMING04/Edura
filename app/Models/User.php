@@ -7,35 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
-use Laravel\Sanctum\HasApiTokens;
-use App\Models\Organizer;
-use App\Models\DepartmentStaff;
-use App\Models\Lecturer;
-use App\Models\University;
-use App\Models\Admin;
-use App\Models\Event;
-use App\Models\Notification;
-use Illuminate\Support\Str;
-use App\Models\Enrollment;
-use App\Models\Friend;
-
-class User extends Authenticatable
-{
-    use HasFactory;
-
-    public $incrementing = false;
-    protected $keyType = 'string';
-
-    protected static function boot()
-    {
-        parent::boot();
-        
-        static::creating(function ($model) {
-            if (empty($model->{$model->getKeyName()})) {
-                $model->{$model->getKeyName()} = Str::uuid()->toString();
-            }
-        });
-    }
 
     /**
      * The attributes that are mass assignable.
@@ -46,6 +17,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role_type',
     ];
 
     /**

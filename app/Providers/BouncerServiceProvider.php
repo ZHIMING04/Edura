@@ -2,13 +2,13 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
+use Silber\Bouncer\BouncerFacade as Bouncer;
 
-class AppServiceProvider extends ServiceProvider
+class BouncerServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Register services.
      */
     public function register(): void
     {
@@ -16,10 +16,10 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap any application services.
+     * Bootstrap services.
      */
     public function boot(): void
     {
-        Vite::prefetch(concurrency: 3);
+        Bouncer::cache();
     }
-}
+} 
