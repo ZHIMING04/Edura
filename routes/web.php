@@ -4,7 +4,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EnrollmentController;
-use App\Http\Controllers\UserRoleController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -22,11 +21,26 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+    // Profile routes
+    Route::middleware(['auth', 'verified'])->group(function () {
+        // Common profile routes
+        Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+        Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+        // Role-specific profile updates
+        Route::patch('/profile/student/update', [ProfileController::class, 'updateStudent'])
+            ->name('profile.student.update');
+        
+        Route::patch('/profile/lecturer/update', [ProfileController::class, 'updateLecturer'])
+            ->name('profile.lecturer.update');
+        
+        Route::patch('/profile/university/update', [ProfileController::class, 'updateUniversity'])
+            ->name('profile.university.update');
+
+        Route::patch('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    });
 
 //Event Routes
 Route::middleware(['auth'])->group(function () {
