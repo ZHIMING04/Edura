@@ -76,33 +76,44 @@ class ProjectController extends Controller
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
                 'description' => 'required|string',
-                'priority' => 'required|in:low,medium,high,critical',
+                'status' => 'required|string|in:Planning,In Progress,Completed,On Hold',
                 'start_date' => 'required|date',
-                'expected_end_date' => 'required|date|after:start_date',
-                'supervisor_id' => 'required|exists:users,id',
+                'expected_end_date' => 'nullable|date|after_or_equal:start_date',
             ]);
 
             \Log::info('Validation passed, validated data:', $validated);
 
-            $student = Student::where('user_id', Auth::id())->first();
-            if (!$student) {
-                return back()->with('error', 'Student profile not found. Please contact administrator.');
+            $user = Auth::user();
+            
+            // If user is a student, use their student ID
+            $studentId = null;
+            if ($user->isA('student')) {
+                $student = Student::where('user_id', $user->id)->first();
+                if ($student) {
+                    $studentId = $student->student_id;
+                }
             }
+            
+            // Default supervisor ID if not provided
+            $supervisorId = $user->isA('lecturer') ? $user->id : null;
+
+            // Convert status to lowercase for database consistency
+            $status = strtolower(str_replace(' ', '_', $validated['status']));
 
             $project = Project::create([
                 'id' => Str::uuid(),
                 'title' => $validated['title'],
                 'description' => $validated['description'],
-                'priority' => $validated['priority'],
+                'priority' => 'medium', // Default priority
                 'start_date' => $validated['start_date'],
                 'expected_end_date' => $validated['expected_end_date'],
-                'supervisor_id' => $validated['supervisor_id'],
-                'student_id' => $student->student_id,
-                'status' => 'planning',
-                'progress_percentage' => 0,
+                'supervisor_id' => $supervisorId,
+                'student_id' => $studentId,
+                'status' => $status,
+                'progress_percentage' => ($status === 'completed') ? 100 : 0,
             ]);
 
-            return redirect()->route('projects.show', $project)
+            return redirect()->route('projects.index')
                 ->with('success', 'Project created successfully.');
         } catch (\Exception $e) {
             \Log::error('Project creation failed:', [

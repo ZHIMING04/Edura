@@ -30,26 +30,31 @@ class ReportController extends BaseController
             $user = auth()->user();
             $role = $user->role;
 
-            \Log::info('Report accessed', ['role' => $role]);
+            \Log::info('Report accessed', ['role' => $role, 'user_id' => $user->id]);
 
             // Get report data based on role
             $report = match($role) {
                 'admin' => $this->getAdminReport(),
                 'university' => $this->getUniversityDashboardReport(),
-                default => null
+                'lecturer' => $this->getUniversityDashboardReport(), // For now, lecturers see university report
+                'student' => $this->getUniversityDashboardReport(), // For now, students see university report
+                default => $this->getUniversityDashboardReport() // Default to university report
             };
 
-            if (!$report) {
-                \Log::warning('Invalid role accessed reports', ['role' => $role]);
-                return back()->with('error', 'Unauthorized access');
-            }
-
-            // Map components
+            // Map components based on role
             $component = match($role) {
                 'admin' => 'Reports/Admin/Index',
                 'university' => 'Reports/University/Index',
-                default => null
+                'lecturer' => 'Reports/University/Index',
+                'student' => 'Reports/University/Index',
+                default => 'Reports/University/Index'
             };
+
+            \Log::info('Rendering report component', [
+                'component' => $component, 
+                'role' => $role,
+                'user_id' => $user->id
+            ]);
 
             return Inertia::render($component, [
                 'report' => $report
@@ -60,7 +65,7 @@ class ReportController extends BaseController
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            return back()->with('error', 'Failed to load report');
+            return back()->with('error', 'Failed to load report: ' . $e->getMessage());
         }
     }
 
