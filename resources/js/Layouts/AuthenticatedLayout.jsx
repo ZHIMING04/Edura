@@ -30,6 +30,18 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     Dashboard
                                 </NavLink>
+                                <NavLink
+                                    href={route('ai-model.index')}
+                                    active={route().current('ai-model.index')}
+                                >
+                                    Success Prediction
+                                </NavLink>
+                                <NavLink
+                                    href={route('ai-model.recommend-event.show')}
+                                    active={route().current('ai-model.recommend-event.show')}
+                                >
+                                    Event Recommendations
+                                </NavLink>
                             </div>
                         </div>
 
