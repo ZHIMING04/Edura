@@ -250,8 +250,9 @@ class EventController extends Controller
     {   
         // Regular individual enrollments
         $enrolledUsers = $event->enrolledUsers()
-            ->select('users.id', 'users.name', 'users.email')
-            ->get();
+            ->select('users.name')
+            ->pluck('name')
+            ->toArray();
 
         return response()->json([
             'users' => $enrolledUsers
