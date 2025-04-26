@@ -108,10 +108,10 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                         </svg>
                                     </div>
                                     <div className="pt-3 sm:pt-5 lg:pt-0">
-                                        <h2 className="text-3xl font-cabinet font-black text-rose-600 tracking-wider uppercase">
+                                        <h2 className="text-3xl font-cabinet font-black text-rose-600 tracking-wider">
                                             Smart Recommendations
                                         </h2>
-                                        <p className="mt-4 text-base/relaxed text-gray-600 font-cabinet font-medium">
+                                        <p className="mt-4 text-base/relaxed text-black-600 font-cabinet font-medium">
                                             Personalized learning paths and content recommendations powered by advanced AI algorithms, ensuring each student receives tailored educational experiences.
                                         </p>
                                     </div>
@@ -132,7 +132,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                         <h2 className="text-3xl font-cabinet font-black text-rose-600 tracking-wider">
                                             Participation Tracking
                                         </h2>
-                                        <p className="mt-4 text-base/relaxed text-gray-600 font-cabinet font-medium">
+                                        <p className="mt-4 text-base/relaxed text-black-600 font-cabinet font-medium">
                                             Real-time monitoring of student engagement and progress, providing detailed analytics for both educators and learners to optimize the learning experience.
                                         </p>
                                     </div>
@@ -153,7 +153,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                         <h2 className="text-3xl font-cabinet font-black text-rose-600 tracking-wider">
                                             AI-powered Talent Identification
                                         </h2>
-                                        <p className="mt-4 text-base/relaxed text-gray-600 font-cabinet font-medium">
+                                        <p className="mt-4 text-base/relaxed text-black-600 font-cabinet font-medium">
                                             Advanced algorithms analyze student performance and potential, helping identify and nurture exceptional talents while providing personalized development pathways.
                                         </p>
                                     </div>
@@ -174,7 +174,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                         <h2 className="text-3xl font-cabinet font-black text-rose-600 tracking-wider">
                                             Funding & Mentorship
                                         </h2>
-                                        <p className="mt-4 text-base/relaxed text-gray-600 font-cabinet font-medium">
+                                        <p className="mt-4 text-base/relaxed text-black-600 font-cabinet font-medium">
                                             Access to educational grants, scholarships, and mentorship programs, connecting students with experienced professionals who can guide their academic and career journey.
                                         </p>
                                     </div>
