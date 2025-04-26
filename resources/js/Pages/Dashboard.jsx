@@ -87,7 +87,7 @@ export default function Dashboard({ auth }) {
                                 transition={{ delay: 0.3, duration: 0.5 }}
                             >
                                 <h3 className="text-lg font-medium text-rose-500 mb-4">Recent Activity</h3>
-                                <p className="text-gray-600">Your recent activities will be displayed here.</p>
+                                <p className="text-black-600">Your recent activities will be displayed here.</p>
                             </motion.div>
 
                             <motion.div 
@@ -97,7 +97,7 @@ export default function Dashboard({ auth }) {
                                 transition={{ delay: 0.3, duration: 0.5 }}
                             >
                                 <h3 className="text-lg font-medium text-rose-500 mb-4">Friend Suggestions</h3>
-                                <p className="text-gray-600">Your friend suggestions will be displayed here.</p>
+                                <p className="text-black-600">Your friend suggestions will be displayed here.</p>
                             </motion.div>
                         </div>
                     </motion.div>
