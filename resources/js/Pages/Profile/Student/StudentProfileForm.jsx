@@ -108,16 +108,59 @@ export default function StudentProfileForm({ className = '', user }) {
                     </div>
 
                     <div>
+                    <InputLabel htmlFor="university" value="University" className="text-rose-400 text-2xl"/>
+                        <select
+                            id="university"
+                            value={data.university}
+                            onChange={(e) => setData('university', e.target.value)}
+                            className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-yellow-400 focus:ring focus:ring-yellow-500 focus:ring-opacity-50"
+                        >
+                            <option value="">Select University</option>
+                            {UNIVERSITIES.map((university) => (
+                                <option key={university} value={university}>
+                                    {university}
+                                </option>
+                            ))}
+                        </select>
 
                         <InputError message={errors.university} className="mt-2" />
                     </div>
 
                     <div>
+                    <InputLabel htmlFor="faculty" value="Faculty" className="text-rose-400 text-2xl"/>
+                        <select
+                            id="faculty"
+                            value={data.faculty}
+                            onChange={(e) => setData('faculty', e.target.value)}
+                             className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-yellow-400 focus:ring focus:ring-yellow-500 focus:ring-opacity-50"
+                        >
+                            <option value="">Select Faculty</option>
+                            {FACULTIES.map((faculty) => (
+                                <option key={faculty} value={faculty}>
+                                    {faculty}
+                                </option>
+                            ))}
+                        </select>
 
                         <InputError message={errors.faculty} className="mt-2" />
                     </div>
 
                     <div>
+                    <InputLabel htmlFor="major" value="Major" className="text-rose-400 text-2xl"/>
+                        <select
+                            id="major"
+                            value={data.major}
+                            onChange={(e) => setData('major', e.target.value)}
+                            className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-yellow-400 focus:ring focus:ring-yellow-500 focus:ring-opacity-50"
+                        >
+                            <option value="">Select Major</option>
+                                {MAJORS.map((major) => (
+                                    <option key={major} value={major}>
+                                        {major}
+                                    </option>
+                                ))
+                            }
+                        </select>
 
                         <InputError message={errors.major} className="mt-2" />
                     </div>
