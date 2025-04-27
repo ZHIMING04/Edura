@@ -7,6 +7,22 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 
+// Configure axios defaults
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+axios.defaults.withCredentials = true;
+
+// Get CSRF token from meta tag if available, otherwise from cookie
+const getCSRFToken = () => {
+    const metaTag = document.querySelector('meta[name="csrf-token"]');
+    if (metaTag) return metaTag.getAttribute('content');
+    
+    // Try to get from cookie
+    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+    if (match) return decodeURIComponent(match[1]);
+    
+    return null;
+};
+
 export default function RecommendEvent({ auth }) {
     const [loading, setLoading] = useState(false);
     const [response, setResponse] = useState(null);
@@ -18,18 +34,28 @@ export default function RecommendEvent({ auth }) {
         project_score: 85,
         mentor_rating: 4.2,
         major: 1,
-        joined_Pitching: 1,
+        joined_Pitching: 0,
         joined_Marketing: 0,
         joined_Finance: 0,
-        joined_Leadership: 1,
-        joined_Networking: 1,
+        joined_Leadership: 0,
+        joined_Networking: 0,
     });
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
+        let newValue;
+
+        if (type === 'checkbox') {
+            newValue = checked ? 1 : 0;
+        } else if (type === 'number') {
+            newValue = parseFloat(value);
+        } else {
+            newValue = value;
+        }
+
         setFormData(prev => ({
             ...prev,
-            [name]: type === 'checkbox' ? (checked ? 1 : 0) : value
+            [name]: newValue
         }));
     };
 
@@ -39,9 +65,32 @@ export default function RecommendEvent({ auth }) {
         setError(null);
         
         try {
-            const result = await axios.post(route('ai-model.recommend-event'), formData);
+            const csrfToken = getCSRFToken();
+            if (!csrfToken) {
+                throw new Error('CSRF token not found');
+            }
+
+            // Convert all numeric strings to numbers
+            const processedData = {
+                ...formData,
+                gpa: parseFloat(formData.gpa),
+                year: parseInt(formData.year),
+                cert_count: parseInt(formData.cert_count),
+                project_score: parseInt(formData.project_score),
+                mentor_rating: parseFloat(formData.mentor_rating),
+                major: parseInt(formData.major),
+            };
+
+            const result = await axios.post(route('api.ai-model.recommend-event'), processedData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-XSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                }
+            });
             setResponse(result.data);
         } catch (err) {
+            console.error('API Error:', err);
             setError(err.response?.data?.message || err.message);
         } finally {
             setLoading(false);
