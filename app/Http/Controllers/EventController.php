@@ -28,6 +28,7 @@ class EventController extends Controller
             'location' => 'required|string|max:255',
             'max_participants' => 'required|integer|min:1',
             'is_external' => 'required|boolean',
+            'category' => 'required|string|in:Pitching,Finance,Marketing,Leadership,Networking',
         ];
 
         // Add registration_url validation if event is external
@@ -61,7 +62,7 @@ class EventController extends Controller
             'is_external' => $validated['is_external'],
             'registration_url' => $validated['registration_url'] ?? null,
             'event_type' => 'Workshop', // Default value
-            'category' => 'Networking', // Default value
+            'category' => $validated['category'],
             'time' => Carbon::now()->format('H:i:s'), // Default value
         ];
 
@@ -162,6 +163,7 @@ class EventController extends Controller
             'location' => 'required|string|max:255',
             'status' => 'required|in:Upcoming,Ongoing,Completed',
             'is_external' => 'required|boolean',
+            'category' => 'required|string|in:Pitching,Finance,Marketing,Leadership,Networking',
         ];
 
         // Add conditional validation rules
@@ -181,6 +183,7 @@ class EventController extends Controller
             'location' => $validated['location'],
             'status' => $validated['status'],
             'is_external' => $validated['is_external'],
+            'category' => $validated['category'],
         ];
 
         // Add conditional fields
@@ -256,6 +259,23 @@ class EventController extends Controller
 
         return response()->json([
             'users' => $enrolledUsers
+        ]);
+    }
+
+    public function getByCategory($category)
+    {
+        Log::info('Fetching events for category: ' . $category);
+        
+        $events = Event::where('category', $category)
+                      ->where('date', '>=', now())
+                      ->orderBy('date')
+                      ->get();
+        
+        Log::info('Found events: ' . $events->count(), ['events' => $events->toArray()]);
+        
+        return response()->json([
+            'success' => true,
+            'events' => $events
         ]);
     }
 } 

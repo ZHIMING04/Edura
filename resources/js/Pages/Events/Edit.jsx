@@ -7,6 +7,14 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { format } from 'date-fns';
 
+const eventCategories = [
+    { value: 'Pitching', label: 'Pitching' },
+    { value: 'Finance', label: 'Finance' },
+    { value: 'Marketing', label: 'Marketing' },
+    { value: 'Leadership', label: 'Leadership' },
+    { value: 'Networking', label: 'Networking' },
+];
+
 export default function Edit({ auth, event }) {
     const { data, setData, put, processing, errors } = useForm({
         title: event.title,
@@ -17,6 +25,7 @@ export default function Edit({ auth, event }) {
         is_external: event.is_external,
         registration_url: event.registration_url || '',
         status: event.status,
+        category: event.category || 'Pitching',
     });
 
     const submit = (e) => {
@@ -28,19 +37,19 @@ export default function Edit({ auth, event }) {
         <AuthenticatedLayout user={auth.user}>
             <Head title={`Edit Event: ${event.title}`} />
 
-            <div className="py-12">
+            <div className="py-12 min-h-screen bg-gradient-to-br from-rose-50 to-yellow-50">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="mb-6 flex justify-between items-center">
-                        <h1 className="text-2xl font-semibold text-gray-900">Edit Event</h1>
+                        <h1 className="text-3xl font-bold leading-tight text-rose-400">Edit Event</h1>
                         <Link 
                             href={route('events.my-events')} 
-                            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                            className="px-4 py-2 bg-rose-400 text-white rounded-md hover:bg-rose-700"
                         >
                             Back to My Events
                         </Link>
                     </div>
 
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div className="bg-white/80 backdrop-blur-sm shadow-lg sm:rounded-2xl border border-rose-100">
                         <div className="p-6">                            
                             <form onSubmit={submit} className="space-y-6">
                                 <div>
@@ -97,6 +106,25 @@ export default function Edit({ auth, event }) {
                                         required
                                     />
                                     <InputError message={errors.location} className="mt-2" />
+                                </div>
+
+                                <div>
+                                    <InputLabel htmlFor="category" value="Event Category" className="text-rose-400 text-2xl" />
+                                    <select
+                                        id="category"
+                                        name="category"
+                                        value={data.category}
+                                        className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-rose-400 focus:ring focus:ring-rose-400 focus:ring-opacity-50"
+                                        onChange={(e) => setData('category', e.target.value)}
+                                        required
+                                    >
+                                        {eventCategories.map((category) => (
+                                            <option key={category.value} value={category.value}>
+                                                {category.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <InputError message={errors.category} className="mt-2" />
                                 </div>
 
                                 <div>

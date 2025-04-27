@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AIModelController;
+use App\Http\Controllers\EventController;
 
 // AI Model API Routes - Public access
 Route::post('/ai-model/predict', [AIModelController::class, 'predict'])
@@ -19,3 +20,5 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::apiResource('posts', PostController::class);
+
+Route::get('/events/category/{category}', [EventController::class, 'getByCategory']);

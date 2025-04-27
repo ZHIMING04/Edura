@@ -7,6 +7,14 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { format } from 'date-fns';
 
+const eventCategories = [
+    { value: 'Pitching', label: 'Pitching' },
+    { value: 'Finance', label: 'Finance' },
+    { value: 'Marketing', label: 'Marketing' },
+    { value: 'Leadership', label: 'Leadership' },
+    { value: 'Networking', label: 'Networking' },
+];
+
 export default function Create({ auth }) {
     const { data, setData, post, processing, errors } = useForm({
         title: '',
@@ -16,6 +24,7 @@ export default function Create({ auth }) {
         max_participants: '',
         is_external: false,
         registration_url: '',
+        category: 'Pitching', // Default category
     });
 
     const submit = (e) => {
@@ -103,6 +112,25 @@ export default function Create({ auth }) {
                                         min="1"
                                     />
                                     <InputError message={errors.max_participants} className="mt-2" />
+                                </div>
+
+                                <div>
+                                    <InputLabel htmlFor="category" value="Event Category" className="text-rose-400 text-2xl" />
+                                    <select
+                                        id="category"
+                                        name="category"
+                                        value={data.category}
+                                        className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-rose-400 focus:ring focus:ring-rose-400 focus:ring-opacity-50"
+                                        onChange={(e) => setData('category', e.target.value)}
+                                        required
+                                    >
+                                        {eventCategories.map((category) => (
+                                            <option key={category.value} value={category.value}>
+                                                {category.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <InputError message={errors.category} className="mt-2" />
                                 </div>
 
                                 <div className="flex items-center gap-4">

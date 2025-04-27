@@ -13,8 +13,7 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Cabinet Grotesk', ...defaultTheme.fontFamily.sans],
-                cabinet: ['Cabinet Grotesk', 'sans-serif'],
+                sans: ['system-ui', ...defaultTheme.fontFamily.sans],
             },
         },
     },
