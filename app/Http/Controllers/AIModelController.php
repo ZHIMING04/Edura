@@ -93,9 +93,46 @@ class AIModelController extends Controller
             $response = Http::post('http://localhost:5000/recommend_event', $validated);
             
             if ($response->successful()) {
+                $aiResponse = $response->json();
+                
+                // Get matching events from database based on AI recommendation
+                $recommendedCategory = $aiResponse['recommended_event'];
+                $matchingEvents = \App\Models\Event::where('category', $recommendedCategory)
+                    ->where('status', 'Upcoming')
+                    ->where(function($query) {
+                        $query->where('is_external', false)
+                            ->whereRaw('enrolled_count < max_participants')
+                            ->orWhere('is_external', true);
+                    })
+                    ->select('event_id', 'title', 'date', 'time', 'location', 'description', 'max_participants', 'enrolled_count', 'is_external', 'registration_url')
+                    ->orderBy('date')
+                    ->take(3)
+                    ->get();
+
                 return response()->json([
                     'success' => true,
-                    'data' => $response->json(),
+                    'data' => [
+                        'ai_prediction' => [
+                            'improvement_percentage' => $aiResponse['improvement_percentage'],
+                            'new_success_probability' => $aiResponse['new_success_probability'],
+                            'recommended_event_type' => $recommendedCategory,
+                            'status' => $aiResponse['status']
+                        ],
+                        'matching_events' => $matchingEvents->map(function($event) {
+                            return [
+                                'event_id' => $event->event_id,
+                                'title' => $event->title,
+                                'date' => $event->date,
+                                'time' => $event->time,
+                                'location' => $event->location,
+                                'description' => $event->description,
+                                'availability' => $event->is_external ? 'External Event' : 
+                                    ($event->max_participants - $event->enrolled_count) . ' spots remaining',
+                                'is_external' => $event->is_external,
+                                'registration_url' => $event->registration_url,
+                            ];
+                        })
+                    ]
                 ]);
             }
             

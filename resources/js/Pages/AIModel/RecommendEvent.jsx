@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Head } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import InputLabel from '@/Components/InputLabel';
@@ -27,6 +27,7 @@ export default function RecommendEvent({ auth }) {
     const [loading, setLoading] = useState(false);
     const [response, setResponse] = useState(null);
     const [error, setError] = useState(null);
+    const [events, setEvents] = useState([]);
     const [formData, setFormData] = useState({
         gpa: 3.4,
         year: 2,
@@ -41,57 +42,60 @@ export default function RecommendEvent({ auth }) {
         joined_Networking: 0,
     });
 
+    // Fetch events when recommended activity changes
+    useEffect(() => {
+        const fetchEvents = async () => {
+            if (response?.ai_prediction?.recommended_event_type) {
+                try {
+                    const result = await axios.get(`/api/events/category/${response.ai_prediction.recommended_event_type}`);
+                    if (result.data.success) {
+                        setEvents(result.data.events || []);
+                    } else {
+                        console.error('Failed to fetch events:', result.data);
+                    }
+                } catch (err) {
+                    console.error('Failed to fetch events:', err);
+                }
+            }
+        };
+
+        fetchEvents();
+    }, [response?.ai_prediction?.recommended_event_type]);
+
     const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        let newValue;
+        const { name, value, type } = e.target;
 
         if (type === 'checkbox') {
-            newValue = checked ? 1 : 0;
-        } else if (type === 'number') {
-            newValue = parseFloat(value);
+            const activityName = name.replace('joined_', '');
+            setFormData(prev => ({
+                ...prev,
+                [`joined_${activityName}`]: e.target.checked ? 1 : 0
+            }));
         } else {
-            newValue = value;
+            setFormData(prev => ({
+                ...prev,
+                [name]: type === 'number' ? parseFloat(value) : value
+            }));
         }
-
-        setFormData(prev => ({
-            ...prev,
-            [name]: newValue
-        }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+        setEvents([]); // Clear previous events
         
         try {
-            const csrfToken = getCSRFToken();
-            if (!csrfToken) {
-                throw new Error('CSRF token not found');
+            const result = await axios.post(route('api.ai-model.recommend-event'), formData);
+            if (result.data.success) {
+                setResponse(result.data.data);
+                setError(null);
+            } else {
+                setError(result.data.message || 'Failed to get recommendations');
             }
-
-            // Convert all numeric strings to numbers
-            const processedData = {
-                ...formData,
-                gpa: parseFloat(formData.gpa),
-                year: parseInt(formData.year),
-                cert_count: parseInt(formData.cert_count),
-                project_score: parseInt(formData.project_score),
-                mentor_rating: parseFloat(formData.mentor_rating),
-                major: parseInt(formData.major),
-            };
-
-            const result = await axios.post(route('api.ai-model.recommend-event'), processedData, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-XSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json',
-                }
-            });
-            setResponse(result.data);
         } catch (err) {
             console.error('API Error:', err);
-            setError(err.response?.data?.message || err.message);
+            setError('Failed to connect to the API');
         } finally {
             setLoading(false);
         }
@@ -101,7 +105,8 @@ export default function RecommendEvent({ auth }) {
         <AuthenticatedLayout
             user={auth.user}
             header={
-                <motion.h2 className="text-3xl font-bold leading-tight text-rose-400"
+                <motion.h2 
+                    className="text-3xl font-bold leading-tight text-rose-400 font-sans"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5 }}
@@ -114,22 +119,26 @@ export default function RecommendEvent({ auth }) {
             <div className="py-12 min-h-screen bg-gradient-to-br from-rose-50 to-yellow-50">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <motion.div 
-                        className="bg-white/80 backdrop-blur-sm shadow-lg sm:rounded-2xl border border-rose-100 p-6" 
-                        initial={{ opacity: 0, scale: 0.95 }} 
-                        animate={{ opacity: 1, scale: 1 }} 
+                        className="bg-white/80 backdrop-blur-sm shadow-lg sm:rounded-2xl border border-rose-100 p-6 font-sans"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.5 }}
                     >
+                        <div className="mb-6">
+                            <h3 className="text-xl font-semibold text-rose-400">Student Information</h3>
+                        </div>
+
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <InputLabel htmlFor="gpa" value="GPA" className="text-rose-400 text-3xl" />
+                                    <InputLabel htmlFor="gpa" value="GPA" className="text-rose-400" />
                                     <TextInput
                                         id="gpa"
                                         type="number"
                                         name="gpa"
                                         value={formData.gpa}
                                         onChange={handleChange}
-                                        className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-yellow-500 focus:ring focus:ring-yellow-400 focus:ring-opacity-50"
+                                        className="mt-1 block w-full border-yellow-300"
                                         step="0.1"
                                         min="0"
                                         max="4"
@@ -137,14 +146,14 @@ export default function RecommendEvent({ auth }) {
                                 </div>
 
                                 <div>
-                                    <InputLabel htmlFor="year" value="Year" className="text-rose-400 text-3xl" />
+                                    <InputLabel htmlFor="year" value="Year" className="text-rose-400" />
                                     <TextInput
                                         id="year"
                                         type="number"
                                         name="year"
                                         value={formData.year}
                                         onChange={handleChange}
-                                        className="mt-1 block w-full border-yellow-300 rounded-md shadow-sm focus:border-yellow-500 focus:ring focus:ring-yellow-400 focus:ring-opacity-50"
+                                        className="mt-1 block w-full border-yellow-300"
                                         min="1"
                                         max="5"
                                     />
@@ -152,34 +161,32 @@ export default function RecommendEvent({ auth }) {
                             </div>
 
                             <div className="mt-4">
-                                <h3 className="text-2xl font-medium mb-2 text-rose-400">Activities</h3>
+                                <h3 className="text-xl font-semibold mb-2 text-rose-400">Activities</h3>
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                    {[
-                                        { id: 'joined_Pitching', label: 'Pitching' },
-                                        { id: 'joined_Marketing', label: 'Marketing' },
-                                        { id: 'joined_Finance', label: 'Finance' },
-                                        { id: 'joined_Leadership', label: 'Leadership' },
-                                        { id: 'joined_Networking', label: 'Networking' }
-                                    ].map((activity) => (
-                                        <div key={activity.id} className="flex items-center">
+                                    {['Pitching', 'Marketing', 'Finance', 'Leadership', 'Networking'].map((activity) => (
+                                        <div key={activity} className="flex items-center">
                                             <input
                                                 type="checkbox"
-                                                id={activity.id}
-                                                name={activity.id}
-                                                checked={formData[activity.id] === 1}
+                                                id={`joined_${activity}`}
+                                                name={`joined_${activity}`}
+                                                checked={formData[`joined_${activity}`] === 1}
                                                 onChange={handleChange}
-                                                className="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+                                                className="rounded border-rose-300 text-rose-600 shadow-sm focus:ring-rose-500"
                                             />
-                                            <label htmlFor={activity.id} className="ml-2 text-sm text-rose-600 text-lg">
-                                                {activity.label}
+                                            <label htmlFor={`joined_${activity}`} className="ml-2 text-rose-600">
+                                                {activity}
                                             </label>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
-                            <div className="flex items-center justify-between">
-                                <PrimaryButton type="submit" disabled={loading} className="bg-yellow-400 text-white hover:bg-yellow-700 transition duration-300 text-lg">
+                            <div className="flex justify-center">
+                                <PrimaryButton 
+                                    type="submit" 
+                                    disabled={loading}
+                                    className="bg-yellow-400 hover:bg-yellow-500 text-white px-6 py-3 rounded-lg text-lg font-semibold transition-all duration-200"
+                                >
                                     {loading ? 'Getting Recommendations...' : 'Get Event Recommendations'}
                                 </PrimaryButton>
                             </div>
@@ -193,11 +200,61 @@ export default function RecommendEvent({ auth }) {
 
                         {response && (
                             <div className="mt-6">
-                                <h3 className="text-lg font-medium mb-4">Recommended Events</h3>
-                                <div className="bg-rose-50 rounded-lg p-4">
-                                    <pre className="whitespace-pre-wrap">
-                                        {JSON.stringify(response.data, null, 2)}
-                                    </pre>
+                                <h3 className="text-xl font-semibold mb-4 text-rose-400">Recommended Events</h3>
+                                <div className="bg-white/50 rounded-lg p-6 shadow-sm border border-rose-100">
+                                    <div className="mb-4">
+                                        <p className="text-lg text-rose-600">
+                                            Success Probability: {response.ai_prediction.new_success_probability}%
+                                        </p>
+                                        <p className="text-lg text-rose-600">
+                                            Improvement: {response.ai_prediction.improvement_percentage}%
+                                        </p>
+                                        <p className="text-lg font-semibold text-rose-600">
+                                            Recommended Activity: {response.ai_prediction.recommended_event_type}
+                                        </p>
+                                    </div>
+
+                                    {events.length > 0 ? (
+                                        <div className="space-y-4">
+                                            <h4 className="text-lg font-semibold text-rose-500">Available {response.ai_prediction.recommended_event_type} Events:</h4>
+                                            {events.map((event) => (
+                                                <div key={event.event_id} className="bg-white p-4 rounded-lg shadow-sm border border-rose-100">
+                                                    <h5 className="text-lg font-semibold text-rose-600">{event.title}</h5>
+                                                    <p className="text-gray-600">{event.description}</p>
+                                                    <div className="mt-2 text-sm text-gray-500">
+                                                        <p>Date: {new Date(event.date).toLocaleDateString()}</p>
+                                                        <p>Time: {event.time}</p>
+                                                        <p>Location: {event.location}</p>
+                                                        <p>Category: {event.category}</p>
+                                                        <div className="mt-3">
+                                                            {!event.is_external ? (
+                                                                <a
+                                                                    href={route('events.show', event.event_id)}
+                                                                    className="inline-flex items-center px-4 py-2 bg-rose-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-rose-600 active:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                                                                >
+                                                                    View Details
+                                                                </a>
+                                                            ) : (
+                                                                <a
+                                                                    href={event.registration_url}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="inline-flex items-center px-4 py-2 bg-rose-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-rose-600 active:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                                                                >
+                                                                    Register External Event
+                                                                </a>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-8">
+                                            <p className="text-gray-500">No {response.ai_prediction.recommended_event_type} events available at the moment.</p>
+                                            <p className="text-sm text-gray-400 mt-2">Please check back later for new events.</p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}

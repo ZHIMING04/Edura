@@ -285,46 +285,127 @@ export default function Index({ auth }) {
                             )}
 
                             {result && (
-                                <div className="mt-6">
-                                    <h3 className="text-lg font-medium mb-4 text-teal-600">Prediction Results</h3>
-                                    <div className="grid grid-cols-3 gap-4">
-                                        <div className="bg-yellow-100 p-4 rounded-lg shadow">
-                                            <div className="text-sm text-gray-500">At Risk</div>
-                                            <div className="text-2xl font-bold text-yellow-600">{formatPercentage(result["0"])}</div>
-                                        </div>
-                                        <div className="bg-red-100 p-4 rounded-lg shadow">
-                                            <div className="text-sm text-gray-500">Dropout</div>
-                                            <div className="text-2xl font-bold text-red-600">{formatPercentage(result["1"])}</div>
-                                        </div>
-                                        <div className="bg-green-100 p-4 rounded-lg shadow">
-                                            <div className="text-sm text-gray-500">Success</div>
-                                            <div className="text-2xl font-bold text-green-600">{formatPercentage(result["2"])}</div>
-                                        </div>
-                                    </div>
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.5 }}
+                                    className="mt-8"
+                                >
+                                    <h3 className="text-2xl font-semibold text-rose-500 mb-8">
+                                        Prediction Analysis
+                                    </h3>
                                     
-                                    <div className="mt-4 bg-blue-50 p-3 rounded">
-                                        <div className="text-sm text-blue-800">
-                                            <p className="font-medium">Highest Probability:</p>
-                                            <p className="mt-1">
-                                                {parseFloat(result["2"]) > parseFloat(result["1"]) && parseFloat(result["2"]) > parseFloat(result["0"]) && (
-                                                    <span className="text-green-600 font-medium">
-                                                        Student is likely to succeed ({formatPercentage(result["2"])})
-                                                    </span>
-                                                )}
-                                                {parseFloat(result["1"]) > parseFloat(result["2"]) && parseFloat(result["1"]) > parseFloat(result["0"]) && (
-                                                    <span className="text-red-600 font-medium">
-                                                        Student is at risk of dropping out ({formatPercentage(result["1"])})
-                                                    </span>
-                                                )}
-                                                {parseFloat(result["0"]) > parseFloat(result["1"]) && parseFloat(result["0"]) > parseFloat(result["2"]) && (
-                                                    <span className="text-yellow-600 font-medium">
-                                                        Student is at risk and needs support ({formatPercentage(result["0"])})
-                                                    </span>
-                                                )}
-                                            </p>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        {/* Success Card */}
+                                        <div className="relative group">
+                                            <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-400 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-200"></div>
+                                            <div className="relative h-full bg-white rounded-2xl p-6 shadow-xl border border-green-100 hover:border-green-200 transition duration-200">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-sm font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full">SUCCESS</span>
+                                                    <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                </div>
+                                                <div className="mt-4">
+                                                    <div className="text-5xl font-bold text-green-500">{formatPercentage(result["2"])}</div>
+                                                    <div className="mt-2 text-sm text-gray-600">Probability of Success</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* At Risk Card */}
+                                        <div className="relative group">
+                                            <div className="absolute inset-0 bg-gradient-to-r from-amber-400 to-yellow-400 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-200"></div>
+                                            <div className="relative h-full bg-white rounded-2xl p-6 shadow-xl border border-yellow-100 hover:border-yellow-200 transition duration-200">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-sm font-semibold text-amber-600 bg-amber-50 px-3 py-1 rounded-full">AT RISK</span>
+                                                    <svg className="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                    </svg>
+                                                </div>
+                                                <div className="mt-4">
+                                                    <div className="text-5xl font-bold text-amber-500">{formatPercentage(result["0"])}</div>
+                                                    <div className="mt-2 text-sm text-gray-600">Needs Support</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Dropout Risk Card */}
+                                        <div className="relative group">
+                                            <div className="absolute inset-0 bg-gradient-to-r from-rose-400 to-red-400 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-200"></div>
+                                            <div className="relative h-full bg-white rounded-2xl p-6 shadow-xl border border-rose-100 hover:border-rose-200 transition duration-200">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-sm font-semibold text-rose-600 bg-rose-50 px-3 py-1 rounded-full">DROPOUT RISK</span>
+                                                    <svg className="w-8 h-8 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                </div>
+                                                <div className="mt-4">
+                                                    <div className="text-5xl font-bold text-rose-500">{formatPercentage(result["1"])}</div>
+                                                    <div className="mt-2 text-sm text-gray-600">Critical Attention Required</div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+
+                                    <div className="mt-8">
+                                        <div className="relative group">
+                                            <div className="absolute inset-0 bg-gradient-to-r from-rose-400 via-rose-500 to-rose-400 rounded-2xl blur opacity-20 group-hover:opacity-30 transition duration-200"></div>
+                                            <div className="relative bg-white rounded-2xl p-6 shadow-xl border border-rose-100 hover:border-rose-200 transition duration-200">
+                                                <div className="flex items-start space-x-4">
+                                                    {parseFloat(result["2"]) > parseFloat(result["1"]) && parseFloat(result["2"]) > parseFloat(result["0"]) && (
+                                                        <>
+                                                            <div className="flex-shrink-0 bg-green-50 rounded-full p-3">
+                                                                <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                </svg>
+                                                            </div>
+                                                            <div>
+                                                                <h4 className="text-xl font-semibold text-gray-800">Excellent Progress</h4>
+                                                                <p className="mt-2 text-gray-600 leading-relaxed">
+                                                                    The student demonstrates exceptional potential with a {formatPercentage(result["2"])} likelihood of academic success. 
+                                                                    Current performance indicators suggest strong academic engagement and effective learning strategies.
+                                                                </p>
+                                                            </div>
+                                                        </>
+                                                    )}
+                                                    {parseFloat(result["1"]) > parseFloat(result["2"]) && parseFloat(result["1"]) > parseFloat(result["0"]) && (
+                                                        <>
+                                                            <div className="flex-shrink-0 bg-rose-50 rounded-full p-3">
+                                                                <svg className="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                                </svg>
+                                                            </div>
+                                                            <div>
+                                                                <h4 className="text-xl font-semibold text-gray-800">Immediate Action Required</h4>
+                                                                <p className="mt-2 text-gray-600 leading-relaxed">
+                                                                    Our analysis indicates a {formatPercentage(result["1"])} risk of academic discontinuation. 
+                                                                    Immediate academic support and guidance counseling is recommended to address underlying challenges.
+                                                                </p>
+                                                            </div>
+                                                        </>
+                                                    )}
+                                                    {parseFloat(result["0"]) > parseFloat(result["1"]) && parseFloat(result["0"]) > parseFloat(result["2"]) && (
+                                                        <>
+                                                            <div className="flex-shrink-0 bg-amber-50 rounded-full p-3">
+                                                                <svg className="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                </svg>
+                                                            </div>
+                                                            <div>
+                                                                <h4 className="text-xl font-semibold text-gray-800">Additional Support Recommended</h4>
+                                                                <p className="mt-2 text-gray-600 leading-relaxed">
+                                                                    The student shows a {formatPercentage(result["0"])} likelihood of facing academic challenges. 
+                                                                    We recommend proactive engagement with academic support services and regular progress monitoring.
+                                                                </p>
+                                                            </div>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
                             )}
                         </div>
                     </motion.div>
